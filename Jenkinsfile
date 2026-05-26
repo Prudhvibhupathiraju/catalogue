@@ -1,15 +1,21 @@
-#!groovy
-@Library('roboshop-shared-library') _
-
-// responsibility to pass what type of application and component is this to pipeline deicssion
-
-def configMap = [
-    application: "nodejsVM",
-    component: "catalogue"
-]
-if( ! env.BRANCH_NAME.equalsIgnoreCase('main')){
-    pipelineDecission.decidePipeline(configMap)
-}
-else{
-    echo "This is PRODUCTION, deal with CR process"
-}
+pipeline {
+    agent {
+        node {
+            label 'AGENT-1'
+        }
+    }
+    environment {
+        packageversion = ''
+    }
+    stages {
+        stage('get the version'){
+            steps{
+                script {
+                    def packagefile = readJSON file: 'package.json'
+                    packageversion = packagefile.version
+                    echo "application verion is ${packagefile.version}"
+                            }
+            }
+        }
+    }
+}   
